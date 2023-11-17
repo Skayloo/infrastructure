@@ -21,11 +21,11 @@ provider "yandex" {
   cloud_id  = "b1g3jddf4nv5e9okle7p"
   folder_id = "b1gm68de4u794bg8egku"
   zone      = "ru-central1-a"
-  service_account_key_file = "C:\\Users\\ss\\Downloads\\authorized_key.json"
+  service_account_key_file = "C:\\Users\\ss\\Downloads\\authorized_key.json" #ТУТ УЖ ИЗВИНИТЕ НА ВИНДЕ ПО-ДРУГОМУ НЕ ЗАВОДИТСЯ!!!!!
 }
 
 resource "yandex_compute_instance" "vm-1" {
-    name = "chapter5-lesson2-std-022-039"
+    name = "std-022-039"
 
     # Конфигурация ресурсов:
     # количество процессоров и оперативной памяти
