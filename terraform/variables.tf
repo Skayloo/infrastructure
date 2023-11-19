@@ -15,3 +15,9 @@ variable "key_file_path" {
     description = "File path with keys for deploy"
     sensitive = true
 }
+
+variable "zone_var" {
+    type = string
+    default = "ru-central1-a"
+    description = "Zone from YC"
+}

@@ -1,38 +1,38 @@
 resource "yandex_compute_disk" "secondary_disk"{
-    name       = "var-partition-std-022-039"
-    type       = "network-hdd"
+    name       = var.secondary_disk_var.name
+    type       = var.secondary_disk_var.type
     zone       = var.zone_var
-    size       = 2
+    size       = var.secondary_disk_var.size
 }
 
 resource "yandex_compute_disk" "thirdary_disk"{
-    name       = "log-partition-std-022-039"
-    type       = "network-hdd"
+    name       = var.thirdary_disk_var.name
+    type       = var.thirdary_disk_var.type
     zone       = var.zone_var
-    size       = 4
+    size       = var.thirdary_disk_var.size
 }
 
 resource "yandex_vpc_address" "addr" {
-  name = "vm-adress"
+  name = var.addr_var
   external_ipv4_address {
     zone_id = var.zone_var
   }
 }
 
 resource "yandex_compute_instance" "vm-1" {
-    name        = "std-022-039"
-    platform_id = "standard-v1"
+    name        = var.vm-1.name
+    platform_id = var.vm-1.platform_id
     zone        = var.zone_var
 
     resources {
-        cores  = 2
-        memory = 4
+        cores  = var.resources.cores
+        memory = var.resources.memory
     }
 
     boot_disk {
         initialize_params {
             image_id = var.image_id_var
-            size = 50
+            size = var.boot_disk_var
         }
     }
 
@@ -46,12 +46,12 @@ resource "yandex_compute_instance" "vm-1" {
 
     network_interface {
         subnet_id = var.subnet_id_var
-        nat       = true
+        nat       = var.default_true_var
         nat_ip_address = yandex_vpc_address.addr.external_ipv4_address[0].address
     }
 
     scheduling_policy {
-      preemptible = true
+      preemptible = var.default_true_var
     }
 
     metadata = {

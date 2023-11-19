@@ -15,3 +15,52 @@ variable "zone_var" {
     default = "ru-central1-a"
     description = "Zone from YC"
 }
+
+variable "secondary_disk_var"{
+    type = object({
+        name       = string
+        type       = string
+        size       = number
+    })
+}
+
+variable "thirdary_disk_var"{
+    type = object({
+        name       = string
+        type       = string
+        size       = number
+    })
+}
+
+variable "vm-1" {
+    type = object({
+        name = string
+        platform_id = string
+    })
+}
+
+variable "resources"{
+    type = object({
+        cores  = number
+        memory = number
+    })
+    default = {
+        cores = 2
+        memory = 4
+    }
+}
+
+variable "boot_disk_var"{
+    type = number
+    default = 50
+}
+
+variable "default_true_var"{
+    type = bool
+    default = true
+}
+
+variable "addr_var" {
+    type = string
+    default = "vm-adress"
+}
