@@ -21,3 +21,15 @@ variable "zone_var" {
     default = "ru-central1-a"
     description = "Zone from YC"
 }
+
+variable "access_key" {
+    type = string
+    description = "Key ID"
+    sensitive = true
+}
+
+variable "secret_key" {
+    type = string
+    description = "Secret key"
+    sensitive = true
+}
