@@ -10,49 +10,64 @@
       - gpg
     state: present
 
-- name: Add keyrings directory
-  become: yes
-  become_user: root
-  become_method: sudo
-  file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: 0777
-
-- name: One way (except using shell)
-  block:
-    - name: Add nodejs apt key
-      shell:
-        cmd: curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-#      ansible.builtin.get_url:
-#        url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
-#        dest: /etc/apt/keyrings/nodesource.gpg
-
-#    - name: Changing mode for nodesource
-#      become: yes
-#      become_user: root
-#      become_method: sudo
-#      file:
-#        path: /etc/apt/keyrings/nodesource.gpg
-#        mode: 0777
-
-    - name: Add nodejs 18.x ppa for apt repo
-      shell:
-        cmd: echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-#      ansible.builtin.apt_repository:
-#        filename: nodesource
-#        repo: "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x focal main"
-#        state: present
-#        update_cache: yes
+- name: Install npm
+  become: true
+  ansible.builtin.package:
+    name:
+      - npm
+    state: latest
+    update_cache: yes
 
 - name: Install nodejs
-  become: yes
-  become_user: root
-  become_method: sudo
-  apt:
-    update_cache: yes
-    name: nodejs
-    state: present
+  ansible.builtin.shell: |
+    curl -SLO https://deb.nodesource.com/nsolid_setup_deb.sh
+    chmod 500 nsolid_setup_deb.sh
+    ./nsolid_setup_deb.sh 16
+    apt-get install nodejs -y
+
+- name: Install http-server globally.
+  community.general.npm:
+    name: http-server
+    global: true
+
+- name: Set capabilities for http-server
+  ansible.builtin.shell:  setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/node
+
+#Я четсно пытался ¯\_(ツ)_/¯
+#- name: Add keyrings directory
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+#  file:
+#    path: /etc/apt/keyrings
+#    state: directory
+#    mode: 0755
+
+#- name: Add nodejs apt key
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+#  apt_key:
+#    url: "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key"
+#    state: present
+
+#- name: Add nodejs 16.x ppa for apt repo
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+#  apt_repository:
+#    repo: "deb https://deb.nodesource.com/node_16.x nodistro main"
+#    state: present
+#    update_cache: yes
+
+#- name: Install nodejs
+#  become: yes
+#  become_user: root
+#  become_method: sudo
+#  apt:
+#    update_cache: yes
+#    name: nodejs
+#   state: present
 
 - name: Add www-data user
   become: yes
@@ -75,15 +90,11 @@
     mode: 0755
 
 - name: Download artifact from Nexus using curl
-  become: yes
-  become_user: root
-  become_method: sudo
-  uri:
+  ansible.builtin.get_url:
     url: "https://nexus.k8s.praktikum-services.tech/repository/std-022-039-frontend/std-022-039-frontend/{{ frontend_npm_version }}/sausage-store-{{ frontend_npm_version }}.tar.gz"
-    user: "{{ student_var  }}"
+    username: "{{ student_var  }}"
     password: "{{ nexus_password  }}"
-    dest: "/tmp"
-    mode: 0755
+    dest: "/tmp/sausage-store.tar.gz"
 
 - name: Untar artifact
   become: yes
@@ -92,16 +103,9 @@
   ansible.builtin.unarchive:
     src: /tmp/sausage-store.tar.gz
     dest: /var/www-data
-
-- name: Changing owner for artifact
-  become: yes
-  become_user: root
-  become_method: sudo
-  file:
-    path: "/var/www-data/frontend"
     owner: www-data
     group: www-data
-    mode: '0755'
+    remote_src: yes
 
 - name: Jinja template configuration for frontend-service
   become: yes
