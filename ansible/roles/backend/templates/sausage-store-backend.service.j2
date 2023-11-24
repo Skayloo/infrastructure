@@ -1,0 +1,14 @@
+[Unit]
+Description=Sausage Store Backend Service
+
+[Service]
+User={{ backend_service_user }}
+
+Restart=always
+
+Environment=REPORT_PATH={{ backend_report_directory }}
+
+ExecStart=/usr/bin/java -Xrs -jar {{ backend_lib_directory }}/sausage-store-{{ backend_maven_version }}.jar
+
+[Install]
+WantedBy=multi-user.target

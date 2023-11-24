@@ -1,0 +1,14 @@
+[Unit]
+Description=Sausage Store Frontend Service
+After=network.target
+[Service]
+User={{ frontend_service_user }}
+
+Restart=always
+
+Environment=REPORT_PATH={{ frontend_report_directory }}
+
+ExecStart=/usr/bin/http-server -p 80 --proxy http://localhost:8080
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,82 @@
+- name: Apt update
+  become: true
+  become_user: root
+  become_method: sudo
+  apt:
+    update_cache: yes
+
+- name: Install Java
+  become: yes
+  become_user: root
+  become_method: sudo
+  apt:
+    name:
+      - openjdk-16-jdk
+      - python3-lxml
+    state: present
+
+- name: Add jarservice user
+  become: yes
+  become_user: root
+  become_method: sudo
+  user:
+    name: "jarservice"
+    create_home: no
+    shell: /sbin/nologin
+
+- name: Create directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: /opt/sausage-store/backend/lib
+    state: directory
+    owner: jarservice
+    group: jarservice
+    mode: 0755
+
+- name: Download artifact from Nexus using maven_artifact
+  become: yes
+  become_user: root
+  become_method: sudo #Тут без обид, но под пользователем jarservice выкидывает ошибку ансибла, что не может переключиться на другого пользователя
+  maven_artifact:
+    dest: "/opt/sausage-store/backend/lib/sausage-store-{{ backend_maven_version }}.jar"
+    repository_url: "https://nexus.k8s.praktikum-services.tech/repository/{{ student_var }}-backend/"
+    group_id: "com.yandex.practicum.devops"
+    artifact_id: "sausage-store"
+    version: "{{ backend_maven_version }}"
+    username: "{{ student_var }}"
+    password: "{{ nexus_password }}"
+
+- name: Changing owner for artifact
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: "/opt/sausage-store/backend/lib/sausage-store-{{ backend_maven_version }}.jar"
+    owner: jarservice
+    group: jarservice
+    mode: '0755'
+
+- name: Jinja template configuration for backend-service
+  become: yes
+  become_user: root
+  become_method: sudo
+  template:
+    src: ../templates/sausage-store-backend.service.j2
+    dest: /etc/systemd/system/sausage-store-backend.service
+
+- name: Reading configuration systemd
+  become: yes
+  become_user: root
+  become_method: sudo
+  systemd:
+   daemon_reload: yes
+
+- name: Deploy
+  become: yes
+  become_user: root
+  become_method: sudo
+  service:
+    name: sausage-store-backend
+    state: started

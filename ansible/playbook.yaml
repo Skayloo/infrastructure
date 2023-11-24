@@ -1,0 +1,9 @@
+- name: One play for deploying backend sausage service
+  hosts: backend # Шаблон целевых хостов это группа хостов с именем backend
+  roles: # Список ansible-ролей для backend-серверов
+    - backend
+
+- name: One play for deploying frontend sausage service
+  hosts: frontend
+  roles:
+    - frontend
