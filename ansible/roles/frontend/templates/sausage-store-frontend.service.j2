@@ -8,7 +8,7 @@ Restart=always
 
 Environment=REPORT_PATH={{ frontend_report_directory }}
 
-ExecStart=/usr/bin/http-server -p 80 --proxy http://localhost:8080
+ExecStart=/usr/bin/http-server {{ http_service }}
 
 [Install]
 WantedBy=multi-user.target

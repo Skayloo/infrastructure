@@ -10,9 +10,7 @@
   become_user: root
   become_method: sudo
   apt:
-    name:
-      - openjdk-16-jdk
-      - python3-lxml
+    name: "{{ packages }}"
     state: present
 
 - name: Add jarservice user
@@ -20,7 +18,7 @@
   become_user: root
   become_method: sudo
   user:
-    name: "jarservice"
+    name: "{{ backend_user }}"
     create_home: no
     shell: /sbin/nologin
 
@@ -29,10 +27,10 @@
   become_user: root
   become_method: sudo
   file:
-    path: /opt/sausage-store/backend/lib
+    path: "{{ sausage_path }}"
     state: directory
-    owner: jarservice
-    group: jarservice
+    owner: "{{ backend_user }}"
+    group: "{{ backend_user }}"
     mode: 0755
 
 - name: Download artifact from Nexus using maven_artifact
@@ -40,10 +38,10 @@
   become_user: root
   become_method: sudo #Тут без обид, но под пользователем jarservice выкидывает ошибку ансибла, что не может переключиться на другого пользователя
   maven_artifact:
-    dest: "/opt/sausage-store/backend/lib/sausage-store-{{ backend_maven_version }}.jar"
-    repository_url: "https://nexus.k8s.praktikum-services.tech/repository/{{ student_var }}-backend/"
-    group_id: "com.yandex.practicum.devops"
-    artifact_id: "sausage-store"
+    dest: "{{ artifact_destination }}"
+    repository_url: "{{ nexus_backend_url }}"
+    group_id: "{{ group_id_backend }}"
+    artifact_id: "{{ artifact_id_backend }}"
     version: "{{ backend_maven_version }}"
     username: "{{ student_var }}"
     password: "{{ nexus_password }}"
@@ -53,9 +51,9 @@
   become_user: root
   become_method: sudo
   file:
-    path: "/opt/sausage-store/backend/lib/sausage-store-{{ backend_maven_version }}.jar"
-    owner: jarservice
-    group: jarservice
+    path: "{{ sausage_path_jar }}"
+    owner: "{{ backend_user }}"
+    group: "{{ backend_user }}"
     mode: '0755'
 
 - name: Jinja template configuration for backend-service
@@ -64,7 +62,7 @@
   become_method: sudo
   template:
     src: ../templates/sausage-store-backend.service.j2
-    dest: /etc/systemd/system/sausage-store-backend.service
+    dest: "{{ sausage_service_path }}"
 
 - name: Reading configuration systemd
   become: yes
@@ -78,5 +76,5 @@
   become_user: root
   become_method: sudo
   service:
-    name: sausage-store-backend
+    name: "{{ service_name }}"
     state: started

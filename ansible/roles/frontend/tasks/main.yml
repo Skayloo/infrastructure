@@ -3,11 +3,7 @@
   become_user: root
   become_method: sudo
   apt:
-    name:
-      - ca-certificates
-      - curl
-      - gnupg
-      - gpg
+    name: "{{ packages }}"
     state: present
 
 - name: Install npm
@@ -33,48 +29,12 @@
 - name: Set capabilities for http-server
   ansible.builtin.shell:  setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/node
 
-#Я четсно пытался ¯\_(ツ)_/¯
-#- name: Add keyrings directory
-#  become: yes
-#  become_user: root
-#  become_method: sudo
-#  file:
-#    path: /etc/apt/keyrings
-#    state: directory
-#    mode: 0755
-
-#- name: Add nodejs apt key
-#  become: yes
-#  become_user: root
-#  become_method: sudo
-#  apt_key:
-#    url: "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key"
-#    state: present
-
-#- name: Add nodejs 16.x ppa for apt repo
-#  become: yes
-#  become_user: root
-#  become_method: sudo
-#  apt_repository:
-#    repo: "deb https://deb.nodesource.com/node_16.x nodistro main"
-#    state: present
-#    update_cache: yes
-
-#- name: Install nodejs
-#  become: yes
-#  become_user: root
-#  become_method: sudo
-#  apt:
-#    update_cache: yes
-#    name: nodejs
-#   state: present
-
 - name: Add www-data user
   become: yes
   become_user: root
   become_method: sudo
   user:
-    name: "www-data"
+    name: "{{ frontend_user }}"
     create_home: no
     shell: /sbin/nologin
 
@@ -83,15 +43,15 @@
   become_user: root
   become_method: sudo
   file:
-    path: /var/www-data
+    path: "{{ sausage_path }}"
     state: directory
-    owner: www-data
-    group: www-data
+    owner: "{{ frontend_user }}"
+    group: "{{ frontend_user }}"
     mode: 0755
 
 - name: Download artifact from Nexus using curl
   ansible.builtin.get_url:
-    url: "https://nexus.k8s.praktikum-services.tech/repository/std-022-039-frontend/std-022-039-frontend/{{ frontend_npm_version }}/sausage-store-{{ frontend_npm_version }}.tar.gz"
+    url: "{{ nexus_frontend_url }}"
     username: "{{ student_var  }}"
     password: "{{ nexus_password  }}"
     dest: "/tmp/sausage-store.tar.gz"
@@ -102,9 +62,9 @@
   become_method: sudo
   ansible.builtin.unarchive:
     src: /tmp/sausage-store.tar.gz
-    dest: /var/www-data
-    owner: www-data
-    group: www-data
+    dest: "{{ sausage_path }}"
+    owner: "{{ frontend_user }}"
+    group: "{{ frontend_user }}"
     remote_src: yes
 
 - name: Jinja template configuration for frontend-service
@@ -113,7 +73,7 @@
   become_method: sudo
   template:
     src: ../templates/sausage-store-frontend.service.j2
-    dest: /etc/systemd/system/sausage-store-frontend.service
+    dest: "{{ sausage_service_path }}"
 
 - name: Reading configuration systemd
   become: yes
@@ -127,5 +87,5 @@
   become_user: root
   become_method: sudo
   service:
-    name: sausage-store-frontend
+    name: "{{ service_name }}"
     state: started

@@ -1,2 +1,13 @@
 ---
 # vars file for frontend
+packages:      
+  - ca-certificates
+  - curl
+  - gnupg
+  - gpg
+frontend_user: www-data
+sausage_path: /var/www-data
+nexus_frontend_url: https://nexus.k8s.praktikum-services.tech/repository/std-022-039-frontend/std-022-039-frontend/{{ frontend_npm_version }}/sausage-store-{{ frontend_npm_version }}.tar.gz
+sausage_service_path: /etc/systemd/system/sausage-store-frontend.service
+service_name: sausage-store-frontend
+http_service: -p 80 --proxy http://localhost:8080

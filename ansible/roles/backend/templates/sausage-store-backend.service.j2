@@ -8,7 +8,7 @@ Restart=always
 
 Environment=REPORT_PATH={{ backend_report_directory }}
 
-ExecStart=/usr/bin/java -Xrs -jar {{ backend_lib_directory }}/sausage-store-{{ backend_maven_version }}.jar
+ExecStart=/usr/bin/java -Xrs -jar {{ jar_file }}
 
 [Install]
 WantedBy=multi-user.target
