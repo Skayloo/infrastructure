@@ -1,0 +1,91 @@
+- name: Install requirements
+  become: yes
+  become_user: root
+  become_method: sudo
+  apt:
+    name: "{{ packages }}"
+    state: present
+
+- name: Install npm
+  become: true
+  ansible.builtin.package:
+    name:
+      - npm
+    state: latest
+    update_cache: yes
+
+- name: Install nodejs
+  ansible.builtin.shell: |
+    curl -SLO https://deb.nodesource.com/nsolid_setup_deb.sh
+    chmod 500 nsolid_setup_deb.sh
+    ./nsolid_setup_deb.sh 16
+    apt-get install nodejs -y
+
+- name: Install http-server globally.
+  community.general.npm:
+    name: http-server
+    global: true
+
+- name: Set capabilities for http-server
+  ansible.builtin.shell:  setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/node
+
+- name: Add www-data user
+  become: yes
+  become_user: root
+  become_method: sudo
+  user:
+    name: "{{ frontend_user }}"
+    create_home: no
+    shell: /sbin/nologin
+
+- name: Create directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: "{{ sausage_path }}"
+    state: directory
+    owner: "{{ frontend_user }}"
+    group: "{{ frontend_user }}"
+    mode: 0755
+
+- name: Download artifact from Nexus using curl
+  ansible.builtin.get_url:
+    url: "{{ nexus_frontend_url }}"
+    username: "{{ student_var  }}"
+    password: "{{ nexus_password  }}"
+    dest: "/tmp/sausage-store.tar.gz"
+
+- name: Untar artifact
+  become: yes
+  become_user: root
+  become_method: sudo
+  ansible.builtin.unarchive:
+    src: /tmp/sausage-store.tar.gz
+    dest: "{{ sausage_path }}"
+    owner: "{{ frontend_user }}"
+    group: "{{ frontend_user }}"
+    remote_src: yes
+
+- name: Jinja template configuration for frontend-service
+  become: yes
+  become_user: root
+  become_method: sudo
+  template:
+    src: ../templates/sausage-store-frontend.service.j2
+    dest: "{{ sausage_service_path }}"
+
+- name: Reading configuration systemd
+  become: yes
+  become_user: root
+  become_method: sudo
+  systemd:
+   daemon_reload: yes
+
+- name: Deploy
+  become: yes
+  become_user: root
+  become_method: sudo
+  service:
+    name: "{{ service_name }}"
+    state: started

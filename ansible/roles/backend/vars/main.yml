@@ -1,0 +1,15 @@
+---
+# vars file for backend
+packages:
+  - openjdk-16-jdk
+  - python3-lxml
+backend_user: jarservice
+sausage_path: /opt/sausage-store/backend/lib
+artifact_destination: /opt/sausage-store/backend/lib/sausage-store-{{ backend_maven_version }}.jar
+nexus_backend_url: https://nexus.k8s.praktikum-services.tech/repository/{{ student_var }}-backend/
+group_id_backend: com.yandex.practicum.devops
+artifact_id_backend: sausage-store
+sausage_path_jar: /opt/sausage-store/backend/lib/sausage-store-{{ backend_maven_version }}.jar
+sausage_service_path: /etc/systemd/system/sausage-store-backend.service
+service_name: sausage-store-backend
+jar_file: {{ backend_lib_directory }}/sausage-store-{{ backend_maven_version }}.jar

@@ -1,0 +1,80 @@
+- name: Apt update
+  become: true
+  become_user: root
+  become_method: sudo
+  apt:
+    update_cache: yes
+
+- name: Install Java
+  become: yes
+  become_user: root
+  become_method: sudo
+  apt:
+    name: "{{ packages }}"
+    state: present
+
+- name: Add jarservice user
+  become: yes
+  become_user: root
+  become_method: sudo
+  user:
+    name: "{{ backend_user }}"
+    create_home: no
+    shell: /sbin/nologin
+
+- name: Create directory
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: "{{ sausage_path }}"
+    state: directory
+    owner: "{{ backend_user }}"
+    group: "{{ backend_user }}"
+    mode: 0755
+
+- name: Download artifact from Nexus using maven_artifact
+  become: yes
+  become_user: root
+  become_method: sudo #Тут без обид, но под пользователем jarservice выкидывает ошибку ансибла, что не может переключиться на другого пользователя
+  maven_artifact:
+    dest: "{{ artifact_destination }}"
+    repository_url: "{{ nexus_backend_url }}"
+    group_id: "{{ group_id_backend }}"
+    artifact_id: "{{ artifact_id_backend }}"
+    version: "{{ backend_maven_version }}"
+    username: "{{ student_var }}"
+    password: "{{ nexus_password }}"
+
+- name: Changing owner for artifact
+  become: yes
+  become_user: root
+  become_method: sudo
+  file:
+    path: "{{ sausage_path_jar }}"
+    owner: "{{ backend_user }}"
+    group: "{{ backend_user }}"
+    mode: '0755'
+
+- name: Jinja template configuration for backend-service
+  become: yes
+  become_user: root
+  become_method: sudo
+  template:
+    src: ../templates/sausage-store-backend.service.j2
+    dest: "{{ sausage_service_path }}"
+
+- name: Reading configuration systemd
+  become: yes
+  become_user: root
+  become_method: sudo
+  systemd:
+   daemon_reload: yes
+
+- name: Deploy
+  become: yes
+  become_user: root
+  become_method: sudo
+  service:
+    name: "{{ service_name }}"
+    state: started

@@ -1,0 +1,16 @@
+backend_maven_version: 1.0.881956
+backend_service_user: jarservice
+backend_report_directory: /opt/sausage-store/reports
+backend_lib_directory: /opt/sausage-store/backend/lib
+frontend_npm_version: 1.0.882101
+frontend_service_user: www-data
+frontend_report_directory: /opt/sausage-store/reports
+student_var: std-022-039
+nexus_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33326431313962623336376138646637326135323832373638613564386434386431343638363564
+          3531343132386434393065623636316134643430396139650a303831383730393633306636636236
+          64306366333234306230626232376631306237346331393932376231346637386165326534666433
+          6633333563633737350a623861626462396536326434353361646663383639386164313361366266
+          3838
+NODE_MAJOR: 18
