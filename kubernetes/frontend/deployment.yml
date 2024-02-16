@@ -6,6 +6,7 @@ metadata:
   labels:
     app: frontend
 spec:
+  revisionHistoryLimit: 15
   replicas: 1
   strategy:
     type: Recreate
@@ -17,19 +18,38 @@ spec:
       labels:
         app: frontend
     spec:
-      nodeSelector:
-        app: frontend
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - frontend
       containers:
         - name: frontend
           image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend:1.0.1080180
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always 
+          env:
+            - name: DEFAULT_HOST
+              value: backend
           ports:
             - name: frontend
-              containerPort: 80
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 1
+            failureThreshold: 6
           volumeMounts:
             - name: nginx-conf
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+              readOnly: true
       volumes:
         - name: nginx-conf
           configMap:
@@ -38,5 +58,4 @@ spec:
               - key: nginx.conf
                 path: nginx.conf 
       imagePullSecrets:
-        # - name: regcred
         - name: docker-config-secret

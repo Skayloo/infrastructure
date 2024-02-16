@@ -2,60 +2,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: backend-report
   labels:
-    app: frontend
+    app: backend-report
 spec:
-  revisionHistoryLimit: 15
   replicas: 1
+  # Стратегия развёртывания. Recreate — удалит сначала все старые поды 
+  # Есть и более гибкая стратегии, например, RollingUpdate, которая будет обновлять поды порциями  
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: frontend
+      app: backend-report
   template:
     metadata:
       labels:
-        app: frontend
+        app: backend-report
     spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - frontend
       containers:
-        - name: frontend
-          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend:1.0.1080180
-          imagePullPolicy: Always 
-          env:
-            - name: DEFAULT_HOST
-              value: backend
+        - name: backend-report
+          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend-report:1.0.1055146
+          imagePullPolicy: IfNotPresent
+          # env:
+          #   - name: VAULT_HOST
+          #     value: 130.193.38.73
+          #   - name: VAULT_TOKEN
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: vault
+          #         key: vault_token
           ports:
-            - name: frontend
-              containerPort: 8080
+            - name: backend-report
+              containerPort: 8081
           livenessProbe:
             httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 15
+              path: /health
+              port: 8081
+            initialDelaySeconds: 20
             periodSeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 10
             failureThreshold: 6
-          volumeMounts:
-            - name: nginx-conf
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-              readOnly: true
-      volumes:
-        - name: nginx-conf
-          configMap:
-            name: nginx-conf
-            items:
-              - key: nginx.conf
-                path: nginx.conf 
       imagePullSecrets:
+        # - name: regcred
         - name: docker-config-secret
