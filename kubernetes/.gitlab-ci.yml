@@ -37,19 +37,19 @@ deploy:
 
     - kubectl apply -f kubernetes/backend-report --recursive --kubeconfig ~/.kube/config
     - kubectl wait --for=condition=Available deployment.apps/backend-report --timeout=100s --kubeconfig ~/.kube/config
-    - kubectl logs deployment.apps/backend-report
+    # - kubectl logs deployment.apps/backend-report
     # - kubectl describe pod backend-report
     # - kubectl describe deployment backend-report --kubeconfig ~/.kube/config
 
     - kubectl apply -f kubernetes/backend --recursive --kubeconfig ~/.kube/config
     - kubectl wait --for=condition=Available deployment.apps/backend --timeout=100s --kubeconfig ~/.kube/config
-    - kubectl logs deployment.apps/backend
+    # - kubectl logs deployment.apps/backend
     # - kubectl describe pod backend
     # - kubectl describe deployment backend --kubeconfig ~/.kube/config
 
     - kubectl apply -f kubernetes/frontend --recursive --kubeconfig ~/.kube/config
     - kubectl wait --for=condition=Available deployment.apps/frontend --timeout=100s --kubeconfig ~/.kube/config
-    - kubectl logs deployment.apps/frontend
+    # - kubectl logs deployment.apps/frontend
 
     - kubectl get pods -n std-022-039
     # - kubectl describe pod frontend
