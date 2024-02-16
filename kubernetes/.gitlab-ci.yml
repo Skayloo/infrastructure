@@ -28,10 +28,10 @@ deploy:
 
   script:
     - kubectl get pods -n std-022-039
-    # - kubectl delete --all deployments --namespace=std-022-039
-    # - kubectl delete --all pods --namespace=std-022-039 --grace-period=0 --force
-    # - kubectl wait --for=delete deployment --all --namespace=std-022-039 --timeout=100s
-    # - kubectl wait --for=delete pod --all --namespace=std-022-039 --timeout=100s
+    - kubectl delete --all deployments --namespace=std-022-039
+    - kubectl delete --all pods --namespace=std-022-039 --grace-period=0 --force
+    - kubectl wait --for=delete deployment --all --namespace=std-022-039 --timeout=100s
+    - kubectl wait --for=delete pod --all --namespace=std-022-039 --timeout=100s
     # - kubectl get pods -n std-022-039
     - kubectl get pods -l app=frontend -o=jsonpath='{.items[*].metadata.name}' | tr -s '[[:space:]]' '\n' | xargs -I {} kubectl logs {}
 
