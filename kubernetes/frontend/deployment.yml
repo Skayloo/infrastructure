@@ -21,7 +21,7 @@ spec:
         app: frontend
       containers:
         - name: frontend
-          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend:1.0.1072751
+          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend:1.0.1080180
           imagePullPolicy: IfNotPresent
           ports:
             - name: frontend
