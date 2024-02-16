@@ -27,13 +27,13 @@ deploy:
     # - kubectl create secret docker-registry regcred --docker-server=gitlab.praktikum-services.ru:5050 --docker-username=$CI_REGISTRY_USER --docker-password=$CI_REGISTRY_PASSWORD --namespace=std-022-039
 
   script:
-    - kubectl get pods -n std-022-039
+    # - kubectl get pods -n std-022-039
     - kubectl delete --all deployments --namespace=std-022-039
     - kubectl delete --all pods --namespace=std-022-039 --grace-period=0 --force
     - kubectl wait --for=delete deployment --all --namespace=std-022-039 --timeout=100s
     - kubectl wait --for=delete pod --all --namespace=std-022-039 --timeout=100s
     # - kubectl get pods -n std-022-039
-    - kubectl get pods -l app=frontend -o=jsonpath='{.items[*].metadata.name}' | tr -s '[[:space:]]' '\n' | xargs -I {} kubectl logs {}
+    # - kubectl get pods -l app=frontend -o=jsonpath='{.items[*].metadata.name}' | tr -s '[[:space:]]' '\n' | xargs -I {} kubectl logs {}
 
     - kubectl apply -f kubernetes/backend-report --recursive --kubeconfig ~/.kube/config
     - kubectl wait --for=condition=Available deployment.apps/backend-report --timeout=100s --kubeconfig ~/.kube/config
@@ -46,12 +46,14 @@ deploy:
     # - kubectl logs deployment.apps/backend
     # - kubectl describe pod backend
     # - kubectl describe deployment backend --kubeconfig ~/.kube/config
-
+ 
     - kubectl apply -f kubernetes/frontend --recursive --kubeconfig ~/.kube/config
     - kubectl wait --for=condition=Available deployment.apps/frontend --timeout=100s --kubeconfig ~/.kube/config
     # - kubectl logs deployment.apps/frontend
 
-    - kubectl get pods -n std-022-039
+    # - kubectl get pods -n std-022-039
+
+    - kubectl apply -f kubernetes/ingress --recursive --kubeconfig ~/.kube/config
     # - kubectl describe pod frontend
     # - kubectl describe deployment frontend --kubeconfig ~/.kube/config
 
