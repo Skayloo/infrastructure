@@ -23,14 +23,14 @@ spec:
         - name: backend-report
           image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend-report:1.0.1055146
           imagePullPolicy: IfNotPresent
-          # env:
-          #   - name: VAULT_HOST
-          #     value: 130.193.38.73
-          #   - name: VAULT_TOKEN
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: vault
-          #         key: vault_token
+          env:
+            - name: VAULT_HOST
+              value: 130.193.38.73
+            - name: VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vault
+                  key: vault_token
           ports:
             - name: backend-report
               containerPort: 8081
