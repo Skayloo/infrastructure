@@ -20,8 +20,8 @@ deploy:
     # - cp ./kubernetes/config ~/.kube/
     - kubectl delete secret docker-config-secret || true
     # - kubectl delete secret regcred || true
-    # - kubectl create secret generic docker-config-secret --from-file=.dockerconfigjson=$DOCKER_LOGIN_TOKEN --type=kubernetes.io/dockerconfigjson
-    # - kubectl get secret docker-config-secret --output=yaml
+    - kubectl create secret generic docker-config-secret --from-file=.dockerconfigjson=$DOCKER_LOGIN_TOKEN --type=kubernetes.io/dockerconfigjson
+    - kubectl get secret docker-config-secret --output=yaml
     # невероятно, но как будто бы это надо было сделать ещё в пз 9.2 
     # (ну то есть, я и сделал, но написали, что это нужно сделать, только сейчас ¯\_(ツ)_/¯)
     # - kubectl create secret docker-registry regcred --docker-server=gitlab.praktikum-services.ru:5050 --docker-username=$CI_REGISTRY_USER --docker-password=$CI_REGISTRY_PASSWORD --namespace=std-022-039
