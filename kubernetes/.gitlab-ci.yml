@@ -35,8 +35,8 @@ deploy:
     # - kubectl get pods -n std-022-039
     # - kubectl get pods -l app=frontend -o=jsonpath='{.items[*].metadata.name}' | tr -s '[[:space:]]' '\n' | xargs -I {} kubectl logs {}
 
-    - kubectl apply -f kubernetes/backend-report --recursive --kubeconfig ~/.kube/config
-    - kubectl wait --for=condition=Available deployment.apps/backend-report --timeout=100s --kubeconfig ~/.kube/config
+    # - kubectl apply -f kubernetes/backend-report --recursive --kubeconfig ~/.kube/config
+    # - kubectl wait --for=condition=Available deployment.apps/backend-report --timeout=100s --kubeconfig ~/.kube/config
     # - kubectl logs deployment.apps/backend-report
     # - kubectl describe pod backend-report
     # - kubectl describe deployment backend-report --kubeconfig ~/.kube/config
