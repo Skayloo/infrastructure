@@ -6,11 +6,13 @@ metadata:
   labels:
     app: backend
 spec:
+  revisionHistoryLimit: 15
   replicas: 1
-  # Стратегия развёртывания. Recreate — удалит сначала все старые поды 
-  # Есть и более гибкая стратегии, например, RollingUpdate, которая будет обновлять поды порциями  
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 20%
   selector:
     matchLabels:
       app: backend
@@ -21,7 +23,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend:1.0.1072750
+          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend:1.0.1086790
           imagePullPolicy: IfNotPresent
           env:
             - name: VAULT_HOST
@@ -45,3 +47,27 @@ spec:
       imagePullSecrets:
         # - name: regcred
         - name: docker-config-secret
+
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: backend
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind: Deployment
+    name: backend
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: "*"
+        minAllowed:
+          cpu: 50m
+          memory: 100Mi
+        maxAllowed:
+          cpu: 1
+          memory: 500Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits

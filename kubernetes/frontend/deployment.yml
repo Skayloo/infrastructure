@@ -29,7 +29,7 @@ spec:
                 - frontend
       containers:
         - name: frontend
-          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend:1.0.1080180
+          image: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend:1.0.1086791
           imagePullPolicy: Always 
           env:
             - name: DEFAULT_HOST
