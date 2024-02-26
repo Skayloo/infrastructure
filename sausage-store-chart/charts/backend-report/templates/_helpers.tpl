@@ -1,7 +1,7 @@
 {{/* Generate basic labels */}}
 {{- define "sausage-store.labels" }}
 app: "{{ .Chart.Name }}"
-app.kubernetes.io/name: sausage-backend-report
+app.kubernetes.io/name: backend-report
 app.kubernetes.io/instance: "{{ .Release.Name }}"
 app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
 app.kubernetes.io/managed-by: "{{ .Release.Service }}"

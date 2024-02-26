@@ -6,7 +6,7 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   labels:
     app: "{{ .Chart.Name }}"
-    app.kubernetes.io/name: sausage-backend
+    app.kubernetes.io/name: backend
     app.kubernetes.io/instance: "{{ .Release.Name }}"
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/managed-by: "{{ .Release.Service }}"
