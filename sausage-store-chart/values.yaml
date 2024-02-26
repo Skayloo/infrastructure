@@ -1,0 +1,49 @@
+backend:
+  image:
+    repository: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend
+    tag: 1.0.1086790
+  replicas: 3
+  service:
+    port: 8080
+    targetPort: 8080
+  revisionHistoryLimit: 15
+  imagePullPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  startupProbe:
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 1
+    failureThreshold: 6
+
+backend-report:
+  image:
+    repository: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend-report
+    tag: 1.0.1086792
+  replicas: 3
+  service:
+    port: 8081
+    targetPort: 8081
+  revisionHistoryLimit: 15
+  imagePullPolicy: Always
+  strategy:
+    type: Recreate
+
+frontend:
+  image:
+    repository: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/frontend
+    tag: 1.0.1086791
+  replicas: 3
+  service:
+    port: 80
+    targetPort: 8080
+  revisionHistoryLimit: 15
+  imagePullPolicy: Always
+  strategy:
+    type: Recreate
+  fqdn: paidyutov-daniil-22.k8s.praktikum-services.tech
+  ingress:
+    port: 80
