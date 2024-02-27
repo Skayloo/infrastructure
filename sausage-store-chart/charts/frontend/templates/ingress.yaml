@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: frontend
+  name: ingress-frontend
 spec:
   ingressClassName: "nginx"
   tls:
@@ -19,3 +19,10 @@ spec:
             name: "{{ .Chart.Name }}"
             port:
               number: {{ .Values.ingress.port }}
+      - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: backend
+              port:
+                number: {{ .Values.service.targetPort }}
