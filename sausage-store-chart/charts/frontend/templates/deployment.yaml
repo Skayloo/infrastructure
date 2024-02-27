@@ -2,8 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
+  name: frontend
+  namespace: "{{ .Release.Namespace }}"
   labels:
     app: "{{ .Chart.Name }}"
     app.kubernetes.io/name: frontend

@@ -2,8 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
+  name: backend
+  namespace: "{{ .Release.Namespace }}"
   labels:
     app: "{{ .Chart.Name }}"
     app.kubernetes.io/name: backend

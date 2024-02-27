@@ -2,8 +2,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-report-{{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
+  name: backend-report
+  namespace: "{{ .Release.Namespace }}"
   labels: "{{ .Chart.Name }}"
     env: "{{ .Values.environment }}"
 spec:
