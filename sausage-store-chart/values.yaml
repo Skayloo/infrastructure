@@ -22,11 +22,11 @@ backend:
 backend-report:
   image:
     repository: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend-report
-    tag: 1.0.1086792
+    tag: 1.0.1106741
   replicas: 1
   service:
-    port: 8081
-    targetPort: 8081
+    port: 8080
+    targetPort: 8080
   revisionHistoryLimit: 15
   imagePullPolicy: Always
   strategy:
