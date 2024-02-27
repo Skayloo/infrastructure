@@ -29,10 +29,9 @@ spec:
     spec:
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
               - key: app
                 operator: In
                 values:
@@ -43,20 +42,9 @@ spec:
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           volumeMounts:
               - name: nginx-conf
-                mountPath: /etc/nginx/conf.d/default.conf
+                mountPath: /etc/nginx/nginx.conf
                 subPath: nginx.conf
                 readOnly: true
-          env:
-            - name: SPRING_CLOUD_VAULT_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: spring-cloud-vault-host
-                  key: spring-cloud-vault-host
-            - name: SPRING_CLOUD_VAULT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: spring-cloud-vault-token
-                  key: spring-cloud-vault-token
           ports:
             - name: frontend
               containerPort: {{ .Values.service.targetPort }}

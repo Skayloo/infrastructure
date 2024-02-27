@@ -2,10 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-report-{{ .Release.Name }}
+  name: backend-report
   namespace: "{{ .Release.Namespace }}"
-  labels:
-    {{ include "sausage-store.labels" . | indent 4 }}
+  labels: "{{ .Chart.Name }}"
     env: "{{ .Values.environment }}"
 spec:
   replicas: {{ .Values.replicas }}
