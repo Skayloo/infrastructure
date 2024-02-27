@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-report-{{ .Release.Name }}
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    {{ include "sausage-store.labels" . | indent 4 }}
+    env: "{{ .Values.environment }}"
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: "{{ .Values.strategy.type }}"
+  selector:
+    matchLabels:
+      app: "{{ .Chart.Name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Chart.Name }}"
+    spec:
+      containers:
+        - name: backend-report
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          env:
+            - name: SPRING_CLOUD_VAULT_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: spring-cloud-vault-host
+                  key: spring-cloud-vault-host
+            - name: SPRING_CLOUD_VAULT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: spring-cloud-vault-token
+                  key: spring-cloud-vault-token
+            - name: VIRTUAL_HOST
+              value: sausage-store-backend-report
+          ports:
+            - name: backend-report
+              containerPort: {{ .Values.service.targetPort }}
+      imagePullSecrets:
+        - name: docker-config-secret

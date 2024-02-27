@@ -1,0 +1,14 @@
+variables:
+  VERSION: 0.1.${CI_PIPELINE_ID}
+
+stages:
+  - build
+
+deploy:
+  stage: build
+  image: alpine/k8s:1.22.6
+  script:
+    - |
+      sed -i "s/0\.1\.2/$VERSION/g" sausage-store-chart/Chart.yaml
+      helm package ./sausage-store-chart
+      curl -u ${NEXUS_REPO_USER}:${NEXUS_REPO_PASS} http://nexus.praktikum-services.tech/repository/sausage-store-paidyutov-daniil-22/ --upload-file sausage-store-${VERSION}.tgz
