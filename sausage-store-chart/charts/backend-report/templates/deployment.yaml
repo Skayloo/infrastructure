@@ -1,10 +1,10 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-report
   namespace: "{{ .Release.Namespace }}"
-  labels: "{{ .Chart.Name }}"
+  labels:
+    {{ .Chart.Name }}: backend-report
     env: "{{ .Values.environment }}"
 spec:
   replicas: {{ .Values.replicas }}
