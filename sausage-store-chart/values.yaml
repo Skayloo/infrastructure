@@ -1,7 +1,7 @@
 backend:
   image:
     repository: gitlab.praktikum-services.ru:5050/std-022-039/sausage-store/backend
-    tag: 1.0.1117326
+    tag: 1.0.1117399
   replicas: 1
   service:
     port: 8080
