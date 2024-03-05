@@ -1,0 +1,34 @@
+---
+groups:
+  - name: Sausage store rules
+    rules:
+      - alert: InstanceDown
+        expr: up{app="backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          project: "sausage_store"
+          component: "backend"
+      - alert: InternalError
+        expr: rate(http_server_requests_seconds_count{app="backend", status="500"}[5m]) > 0.005
+        labels:
+          severity: critical
+          project: "sausage_store"
+          component: "backend"
+      - alert: OrdersErrorQuantile
+        expr: |
+            histogram_quantile(0.95,
+              http_server_requests_seconds_bucket{status=~"2..",uri="/api/orders"}
+            ) >= 0.100000000000
+        for: 5m
+        labels:
+          severity: critical
+          project: "sausage_store"
+          component: "backend"
+      - alert: PrometheusActuator
+        expr: rate(http_server_requests_seconds_count{app="backend",uri="/actuator/prometheus", status!~"5.."}[2m]) > 0.005
+        for: 2m
+        labels:
+          severity: warning
+          project: "sausage_store"
+          component: "backend"
